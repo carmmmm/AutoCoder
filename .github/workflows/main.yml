@@ -15,11 +15,12 @@ jobs:
       - name: Check if issue has autocoder-bot label
         id: check_label
         run: |
+          # Check if the issue has the 'autocoder-bot' label
           if [[ ! "${{ github.event.issue.labels.*.name }}" =~ "autocoder-bot" ]]; then
             echo "This issue does not have the autocoder-bot label. Exiting."
             exit 0
           fi
-          
+
       - name: Set up OpenAI API Key
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
