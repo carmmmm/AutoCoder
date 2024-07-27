@@ -14,10 +14,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up OpenAI API Key
-        uses: actions/setup-env@v2
-        with:
-          env:
-            OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
 
       - name: Make Script Executable
         run: chmod +x ./scripts/script.sh
@@ -36,11 +33,13 @@ jobs:
           name: autocoder-artifact
           path: autocoder-artifact/
 
-      - name: Download and List Artifact Contents
+      - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
           name: autocoder-artifact
           path: autocoder-artifact
 
       - name: List Generated Files Recursively
-        run: ls -R autocoder-artifact/
+        run: |
+          echo "Listing files in autocoder-artifact directory:"
+          ls -R autocoder-artifact/
