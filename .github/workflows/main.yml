@@ -1,33 +1,53 @@
-name: Access Issue Information
+name: Access Issue Information and Generate Code
 
 on:
   issues:
     types: [opened, reopened]
 
 jobs:
-  access_issue_info:
+  process_issue:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Print Issue Information
+      - name: Check if issue has autocoder-bot label
+        id: check_label
+        run: |
+          if [[ "${{ github.event.issue.labels.*.name }}" != *"autocoder-bot"* ]]; then
+            echo "This issue does not have the autocoder-bot label. Exiting."
+            exit 0
+          fi
+
+      - name: Set up OpenAI API Key
+        uses: actions/setup-env@v2
+        with:
+          env:
+            OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+
+      - name: Make Script Executable
+        run: chmod +x ./scripts/script.sh
+
+      - name: Generate Code with ChatGPT
+        id: generate_code
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
-          ISSUE_TITLE: ${{ github.event.issue.title }}
-          ISSUE_BODY: ${{ github.event.issue.body }}
-          ISSUE_ASSIGNEES: ${{ join(github.event.issue.assignees.*.login, ', ') }}
-          ISSUE_LABELS: ${{ join(github.event.issue.labels.*.name, ', ') }}
-        run: |
-          echo "Issue Number: $ISSUE_NUMBER"
-          echo "Issue Title: $ISSUE_TITLE"
-          echo "Issue Body: $ISSUE_BODY"
-          echo "Issue Assignees: $ISSUE_ASSIGNEES"
-          echo "Issue Labels: $ISSUE_LABELS"
-          
-      - name: Fetch Issue Information from GitHub API
-        run: |
-          ISSUE_NUMBER=${{ github.event.issue.number }}
-          ISSUE_RESPONSE=$(curl -s https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER)
-          echo "Issue Information from API: $ISSUE_RESPONSE"
+          REPO: ${{ github.repository }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: ./scripts/script.sh $ISSUE_NUMBER $REPO $OPENAI_API_KEY
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: autocoder-artifact
+          path: autocoder-artifact/
+
+      - name: Download and List Artifact Contents
+        uses: actions/download-artifact@v3
+        with:
+          name: autocoder-artifact
+          path: autocoder-artifact
+
+      - name: List Generated Files
+        run: ls -R autocoder-artifact/
