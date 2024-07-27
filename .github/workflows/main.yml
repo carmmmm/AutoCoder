@@ -42,5 +42,5 @@ jobs:
           name: autocoder-artifact
           path: autocoder-artifact
 
-      - name: List Generated Files
+      - name: List Generated Files Recursively
         run: ls -R autocoder-artifact/
