@@ -45,13 +45,8 @@ jobs:
         with:
           name: autocoder-artifact
           path: autocoder-artifact
-
-      - name: List Generated Files
+          
+      - name: List Generated Files Recursively
         run: |
-          if [ -d "autocoder-artifact" ]; then
-            echo "Listing files in autocoder-artifact directory:"
-            ls -R autocoder-artifact/
-          else
-            echo "Directory autocoder-artifact does not exist."
-            exit 1
-          fi
+          echo "Listing all files in autocoder-artifact directory:"
+          find autocoder-artifact
