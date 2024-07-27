@@ -3,6 +3,12 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
+# Debugging output
+echo "GITHUB_TOKEN: $1"
+echo "REPOSITORY: $2"
+echo "ISSUE_NUMBER: $3"
+echo "OPENAI_API_KEY: $4"
+
 # Get inputs from the environment
 GITHUB_TOKEN="$1"
 REPOSITORY="$2"
