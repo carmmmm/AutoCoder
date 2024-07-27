@@ -2,7 +2,7 @@ name: Access Issue Information and Generate Code
 
 on:
   issues:
-    types: [opened, reopened]
+    types: [opened, reopened, labeled]
 
 jobs:
   process_issue:
@@ -15,7 +15,7 @@ jobs:
       - name: Check if issue has autocoder-bot label
         id: check_label
         run: |
-          if [[ "${{ github.event.issue.labels.*.name }}" != *"autocoder-bot"* ]]; then
+          if [[ ! "${{ github.event.issue.labels.*.name }}" =~ "autocoder-bot" ]]; then
             echo "This issue does not have the autocoder-bot label. Exiting."
             exit 0
           fi
