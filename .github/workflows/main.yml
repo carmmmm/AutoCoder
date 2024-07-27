@@ -54,3 +54,4 @@ jobs:
       - name: List Generated Files Recursively
         run: |
           echo "Listing all files in autocoder-artifact directory:"
+          ls -R autocoder-artifact/
