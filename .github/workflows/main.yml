@@ -11,18 +11,11 @@ permissions:
 jobs:
   process_issue:
     runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'autocoder-bot')
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-
-      - name: Check if issue has autocoder-bot label
-        id: check_label
-        run: |
-          if [[ "${{ github.event.issue.labels.*.name }}" != *"autocoder-bot"* ]]; then
-            echo "This issue does not have the autocoder-bot label. Exiting."
-            exit 0
-          fi
 
       - name: Set up OpenAI API Key
         uses: actions/setup-env@v2
