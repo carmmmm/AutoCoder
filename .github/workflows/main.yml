@@ -2,19 +2,33 @@ name: Access Issue Information and Generate Code
 
 on:
   issues:
-    types: [opened, reopened, labeled]
+    types: [opened, reopened]
+
+permissions:
+  contents: read
+  actions: write
 
 jobs:
   process_issue:
-    if: contains(github.event.issue.labels.*.name, 'autocoder-bot') # Check if the issue has the autocoder-bot label
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
 
+      - name: Check if issue has autocoder-bot label
+        id: check_label
+        run: |
+          if [[ "${{ github.event.issue.labels.*.name }}" != *"autocoder-bot"* ]]; then
+            echo "This issue does not have the autocoder-bot label. Exiting."
+            exit 0
+          fi
+
       - name: Set up OpenAI API Key
-        run: echo "OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}" >> $GITHUB_ENV
+        uses: actions/setup-env@v2
+        with:
+          env:
+            OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
       - name: Make Script Executable
         run: chmod +x ./scripts/script.sh
@@ -39,7 +53,12 @@ jobs:
           name: autocoder-artifact
           path: autocoder-artifact
 
-      - name: List Generated Files Recursively
+      - name: List Generated Files
         run: |
-          echo "Listing files in autocoder-artifact directory:"
-          ls -R autocoder-artifact/
+          if [ -d "autocoder-artifact" ]; then
+            echo "Listing files in autocoder-artifact directory:"
+            ls -R autocoder-artifact/
+          else
+            echo "Directory autocoder-artifact does not exist."
+            exit 1
+          fi
