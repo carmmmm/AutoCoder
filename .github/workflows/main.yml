@@ -25,3 +25,9 @@ jobs:
           echo "Issue Body: $ISSUE_BODY"
           echo "Issue Assignees: $ISSUE_ASSIGNEES"
           echo "Issue Labels: $ISSUE_LABELS"
+          
+      - name: Fetch Issue Information from GitHub API
+        run: |
+          ISSUE_NUMBER=${{ github.event.issue.number }}
+          ISSUE_RESPONSE=$(curl -s https://api.github.com/repos/${{ github.repository }}/issues/$ISSUE_NUMBER)
+          echo "Issue Information from API: $ISSUE_RESPONSE"
