@@ -12,9 +12,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-      - name: Set permissions for script.sh
-        run: chmod +x scripts/script.sh
-
       - name: Check if issue has autocoder-bot label
         id: check_label
         run: |
@@ -23,15 +20,6 @@ jobs:
             exit 0
           fi
           
-      - name: Run script.sh
-        if: env.has_label == 'true'
-        env:
-         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-         REPOSITORY: ${{ github.repository }}
-         ISSUE_NUMBER: ${{ github.event.issue.number }}
-         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: ./scripts/script.sh $GITHUB_TOKEN $REPOSITORY $ISSUE_NUMBER $OPENAI_API_KEY
-      
       - name: Set up OpenAI API Key
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
