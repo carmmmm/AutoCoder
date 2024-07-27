@@ -2,7 +2,7 @@ name: Access Issue Information and Generate Code
 
 on:
   issues:
-    types: [opened, reopened]
+    types: [opened, reopened, labeled]
 
 permissions:
   contents: read
